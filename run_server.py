@@ -286,6 +286,13 @@ class DualServer:
         self.start_https()
 
 if __name__ == '__main__':
+    # Cloud environments (Render, Railway, Heroku) supply $PORT
+    if 'PORT' in os.environ:
+        cloud_port = int(os.environ.get('PORT', 10000))
+        print(f"[Render/Cloud] Starting unified web server on 0.0.0.0:{cloud_port}...")
+        httpd = ThreadingHTTPServer(('0.0.0.0', cloud_port), NavRequestHandler)
+        httpd.serve_forever()
+
     https_port = 8443
     target_ip = None
     for arg in sys.argv[1:]:
