@@ -13,7 +13,7 @@ export default function SensorCalibrationModal({
   if (!isOpen) return null;
 
   const [stride, setStride] = useState(calibrationParams.strideLengthMeters || 0.70);
-  const [sensitivity, setSensitivity] = useState(calibrationParams.stepSensitivity || 0.38);
+  const [sensitivity, setSensitivity] = useState(calibrationParams.stepSensitivity || 0.60);
   const [compassOffset, setCompassOffset] = useState(calibrationParams.headingOffsetDeg || 0);
   const [snapToCorridor, setSnapToCorridor] = useState(calibrationParams.snapToCorridor !== false);
   const [offRouteThreshold, setOffRouteThreshold] = useState(calibrationParams.offRouteThresholdMeters || 3.0);
@@ -36,7 +36,7 @@ export default function SensorCalibrationModal({
 
   const handleResetDefaults = () => {
     setStride(0.70);
-    setSensitivity(0.38);
+    setSensitivity(0.60);
     setCompassOffset(0);
     setSnapToCorridor(true);
     setOffRouteThreshold(3.0);

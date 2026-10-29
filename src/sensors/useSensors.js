@@ -46,13 +46,13 @@ export function useSensors({
   const [hasOrientationSensor, setHasOrientationSensor] = useState(false);
 
   // Calibration state
-  const [stepSensitivity, setStepSensitivity] = useState(0.38); // m/s^2 impact threshold
+  const [stepSensitivity, setStepSensitivity] = useState(0.60); // m/s^2 impact threshold (calibrated to reject phone shaking)
   const [stepLengthMeters, setStepLengthMeters] = useState(0.70);
   const [compassOffsetDeg, setCompassOffsetDeg] = useState(0);
   const [snapToCorridor, setSnapToCorridor] = useState(true);
   const [offRouteThresholdMeters, setOffRouteThresholdMeters] = useState(3.0);
 
-  const pedometerRef = useRef(new Pedometer({ impactThreshold: stepSensitivity }));
+  const pedometerRef = useRef(new Pedometer({ impactThreshold: 0.60 }));
   const targetHeadingRef = useRef(0);
   const currentHeadingRef = useRef(0);
   const gyroRateZRef = useRef(0);
@@ -142,7 +142,8 @@ export function useSensors({
       return;
     }
 
-    setStepCount((c) => c + 1);
+    const inc = stepData.stepCountIncrement || 1;
+    setStepCount((c) => c + inc);
 
     if (stepData.cadence) {
       setCadence(stepData.cadence);
@@ -154,6 +155,7 @@ export function useSensors({
     }
 
     // 2. Project step along route polyline or free dead reckoning
+    const effStepLength = stepLengthMeters * inc;
     let routeStepResult;
     let nextTargetPos;
     const isFwd = motionResult.direction === 1;
@@ -163,7 +165,7 @@ export function useSensors({
         current,
         currentRoute,
         currentHeadingRef.current,
-        stepLengthMeters,
+        effStepLength,
         currentMap,
         effDirection,
         motionResult
@@ -176,7 +178,7 @@ export function useSensors({
       nextTargetPos = projectDeadReckoningStep(
         current,
         currentHeadingRef.current,
-        stepLengthMeters,
+        effStepLength,
         currentMap,
         !isFwd
       );
